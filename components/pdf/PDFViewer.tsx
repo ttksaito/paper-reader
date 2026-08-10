@@ -95,7 +95,7 @@ export default function PDFViewer({ pdfUrl, onPageChange, initialPage = 1 }: PDF
             pageNumber={pageNumber}
             scale={scale}
             renderTextLayer={true}
-            renderAnnotationLayer={true}
+            renderAnnotationLayer={false}
             className="shadow-lg"
           />
         </Document>
