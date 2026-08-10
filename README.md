@@ -1,36 +1,94 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Paper Reader
 
-## Getting Started
+iPad向け英語論文PDFリーダー Webアプリ
 
-First, run the development server:
+## 概要
+
+Paper Readerは、iPad上で英語論文を効率的に閲覧・読解・整理するためのWebアプリです。Apple Pencilを使用してPDFに直接書き込み、マーカー、下線、手書きメモなどを行えます。
+
+## 主な機能（MVP）
+
+- **PDF表示**: PDF.jsを使用したPDF閲覧
+- **Apple Pencil対応**: ペン、マーカー、消しゴム機能
+- **左右分割レイアウト**: PDFとノートの同時表示
+- **テキスト選択・翻訳**: 英文を選択して日本語訳を表示
+- **ノート機能**: 論文ごとのノート作成と自動保存
+- **Library機能**: 複数論文の管理と検索
+- **PWA対応**: ホーム画面から独立したアプリとして起動
+
+## 技術スタック
+
+- **フレームワーク**: Next.js 15 (App Router)
+- **言語**: TypeScript
+- **スタイリング**: Tailwind CSS
+- **PDF処理**: PDF.js, react-pdf
+- **データベース**: Supabase (PostgreSQL + Storage)
+- **ローカルキャッシュ**: IndexedDB
+
+## セットアップ
+
+### 1. 依存関係のインストール
+
+```bash
+npm install
+```
+
+### 2. 環境変数の設定
+
+`.env.local`ファイルを作成し、Supabaseの設定を追加します：
+
+```bash
+cp .env.local.example .env.local
+```
+
+`.env.local`を編集して、Supabaseの認証情報を設定してください。
+
+### 3. 開発サーバーの起動
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+ブラウザで [http://localhost:3000](http://localhost:3000) を開きます。
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### 4. ビルド
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm run build
+```
 
-## Learn More
+### 5. 本番環境の起動
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+npm start
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## プロジェクト構造
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```
+paper-reader/
+├── app/              # Next.js App Router
+├── components/       # Reactコンポーネント
+│   ├── pdf/         # PDF表示関連
+│   ├── library/     # Library画面
+│   ├── reader/      # Reader画面
+│   └── notes/       # Notes機能
+├── lib/             # ユーティリティ
+├── types/           # TypeScript型定義
+└── public/          # 静的ファイル
+```
 
-## Deploy on Vercel
+## 開発優先順位
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+1. PDF表示機能の実装
+2. Apple Pencil対応と描画機能
+3. Notes機能
+4. 英語論文読解支援機能
+5. Library画面
+6. データ保存（Supabase）
+7. PWA対応
+8. 最終調整
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## ライセンス
+
+Private
