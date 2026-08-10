@@ -176,7 +176,12 @@ export default function AddPaperModal({ isOpen, onClose, onSuccess }: AddPaperMo
                 file={selectedFile}
                 onLoadSuccess={onDocumentLoadSuccess}
               >
-                <Page pageNumber={1} width={100} />
+                <Page
+                  pageNumber={1}
+                  width={100}
+                  renderTextLayer={false}
+                  renderAnnotationLayer={false}
+                />
               </Document>
             </div>
           )}
