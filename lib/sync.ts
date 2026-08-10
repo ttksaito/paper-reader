@@ -16,10 +16,10 @@ import {
   createPaper,
   updatePaper,
   upsertNote,
-  saveAnnotation,
+  updateAnnotation,
   getAllPapers,
   getNoteByPaperId,
-  getAnnotationsByPaper,
+  getAnnotationsByPaperId,
 } from './database';
 
 // Sync status
@@ -88,9 +88,8 @@ export async function syncToSupabase(): Promise<SyncResult> {
       try {
         const { id, synced, ...annotationData } = annotation;
 
-        await saveAnnotation(
-          annotationData.paper_id,
-          annotationData.page_number,
+        await updateAnnotation(
+          id,
           annotationData.strokes
         );
 
@@ -160,7 +159,7 @@ export async function syncFromSupabase(): Promise<SyncResult> {
 
       // Fetch and cache annotations for this paper
       try {
-        const annotations = await getAnnotationsByPaper(paper.id);
+        const annotations = await getAnnotationsByPaperId(paper.id);
         for (const annotation of annotations) {
           const cachedAnnotation: CachedAnnotation = {
             ...annotation,
