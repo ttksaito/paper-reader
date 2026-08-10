@@ -2,17 +2,19 @@
 
 import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
-import dynamic from 'next/dynamic';
+import dynamicImport from 'next/dynamic';
 import ResizableSplitPane from '@/components/layout/ResizableSplitPane';
 import NotesPanel from '@/components/notes/NotesPanel';
 import { PDFViewerWithAnnotationRef } from '@/components/pdf/PDFViewerWithAnnotation';
 import { updateReadingProgress } from '@/lib/database';
 
 // クライアントサイドでのみロード
-const PDFViewerWithAnnotation = dynamic(
+const PDFViewerWithAnnotation = dynamicImport(
   () => import('@/components/pdf/PDFViewerWithAnnotation'),
   { ssr: false }
 );
+
+export const dynamic = 'force-dynamic';
 
 export default function ReaderPage() {
   const [pdfUrl, setPdfUrl] = useState<string>('');

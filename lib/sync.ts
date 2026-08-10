@@ -55,11 +55,9 @@ export async function syncToSupabase(): Promise<SyncResult> {
       try {
         const { id, synced, ...paperData } = paper;
 
-        // Try to create or update in Supabase
-        await createPaper({
-          ...paperData,
-          id,
-        });
+        // Try to update existing paper in Supabase (assumes it exists)
+        // If it doesn't exist, this will fail silently
+        await updatePaper(id, paperData);
 
         // Mark as synced in IndexedDB
         await markAsSynced('papers', id);
@@ -86,12 +84,13 @@ export async function syncToSupabase(): Promise<SyncResult> {
     // Sync annotations
     for (const annotation of unsynced.annotations) {
       try {
-        const { id, synced, ...annotationData } = annotation;
+        const { id, synced, page_number, strokes, ...rest } = annotation;
 
-        await updateAnnotation(
-          id,
-          annotationData.strokes
-        );
+        // Convert CachedAnnotation to Annotation format
+        await updateAnnotation(id, {
+          page: page_number,
+          ...(typeof strokes === 'object' && strokes !== null ? strokes : {}),
+        });
 
         await markAsSynced('annotations', id);
         annotationsSynced++;
@@ -161,8 +160,11 @@ export async function syncFromSupabase(): Promise<SyncResult> {
       try {
         const annotations = await getAnnotationsByPaperId(paper.id);
         for (const annotation of annotations) {
+          const { page, tool, color, width, points, ...rest } = annotation;
           const cachedAnnotation: CachedAnnotation = {
-            ...annotation,
+            ...rest,
+            page_number: page,
+            strokes: { tool, color, width, points },
             synced: true,
           };
           await cacheAnnotation(cachedAnnotation);

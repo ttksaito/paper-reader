@@ -2,10 +2,18 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import dynamicImport from 'next/dynamic';
 import { Paper } from '@/types';
 import { getAllPapers, deletePaper } from '@/lib/database';
-import AddPaperModal from '@/components/library/AddPaperModal';
 import SyncManager from '@/components/sync/SyncManager';
+
+// AddPaperModalは PDF.js を使用するため、クライアントサイドのみでロード
+const AddPaperModal = dynamicImport(
+  () => import('@/components/library/AddPaperModal'),
+  { ssr: false }
+);
+
+export const dynamic = 'force-dynamic';
 
 export default function LibraryPage() {
   const [papers, setPapers] = useState<Paper[]>([]);

@@ -267,11 +267,11 @@ const AnnotationLayer = forwardRef<AnnotationLayerRef, AnnotationLayerProps>(({
       setUndoneStrokes([]);
 
       // Supabaseに保存
-      if (paperId && pageNumber) {
+      if (paperId && pageNumber && toolMode !== 'view') {
         await createAnnotation({
           paper_id: paperId,
           page: pageNumber,
-          tool: toolMode,
+          tool: toolMode as 'pen' | 'marker' | 'eraser',
           color: toolMode === 'pen' ? '#000000' : toolMode === 'marker' ? '#FFFF00' : '#FFFFFF',
           width: toolMode === 'pen' ? 2 : toolMode === 'marker' ? 10 : 20,
           points: currentStroke,

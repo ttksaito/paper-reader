@@ -1,11 +1,8 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Document, Page, pdfjs } from 'react-pdf';
 import { uploadPDF, createPaper } from '@/lib/database';
-
-// PDF.jsワーカーの設定
-pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
 
 interface AddPaperModalProps {
   isOpen: boolean;
@@ -23,6 +20,11 @@ export default function AddPaperModal({ isOpen, onClose, onSuccess }: AddPaperMo
   const [uploadProgress, setUploadProgress] = useState<number>(0);
   const [error, setError] = useState<string>('');
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // PDF.jsワーカーの設定（クライアントサイドのみ）
+  useEffect(() => {
+    pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
+  }, []);
 
   if (!isOpen) return null;
 
