@@ -1,10 +1,9 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import Link from 'next/link';
 import dynamicImport from 'next/dynamic';
 import { Paper } from '@/types';
-import { getAllPapers, deletePaper } from '@/lib/database';
+import { getAllPapers } from '@/lib/database';
 import SyncManager from '@/components/sync/SyncManager';
 
 // AddPaperModalは PDF.js を使用するため、クライアントサイドのみでロード
@@ -13,12 +12,19 @@ const AddPaperModal = dynamicImport(
   { ssr: false }
 );
 
-export const dynamic = 'force-dynamic';
+interface LibrarySidebarProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onPaperSelect: (paper: Paper) => void;
+  selectedPaperId?: string;
+}
 
-export default function LibraryPage() {
+export default function LibrarySidebar({ isOpen, onClose, onPaperSelect, selectedPaperId }: LibrarySidebarProps) {
   const [papers, setPapers] = useState<Paper[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [showAddModal, setShowAddModal] = useState<boolean>(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [sortBy, setSortBy] = useState<'recent' | 'title' | 'year'>('recent');
 
   // Supabaseから論文を取得
   const loadPapers = async () => {
@@ -31,9 +37,6 @@ export default function LibraryPage() {
   useEffect(() => {
     loadPapers();
   }, []);
-
-  const [searchQuery, setSearchQuery] = useState('');
-  const [sortBy, setSortBy] = useState<'recent' | 'title' | 'year'>('recent');
 
   const filteredPapers = papers
     .filter((paper) => {
@@ -76,43 +79,52 @@ export default function LibraryPage() {
     return Math.round((paper.current_page / paper.total_pages) * 100);
   };
 
-  return (
-    <div className="flex flex-col h-screen bg-gray-50">
-      {/* ヘッダー */}
-      <header className="bg-white border-b border-gray-200 p-4 flex-shrink-0">
-        <div className="max-w-7xl mx-auto">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-4">
-              <Link href="/" className="text-blue-600 hover:text-blue-700">
-                ← ホームへ戻る
-              </Link>
-              <h1 className="text-2xl font-bold">Library</h1>
-            </div>
+  if (!isOpen) return null;
 
-            <div className="flex items-center gap-4">
+  return (
+    <>
+      {/* Overlay */}
+      <div
+        className="fixed inset-0 bg-black bg-opacity-50 z-40"
+        onClick={onClose}
+      />
+
+      {/* Sidebar */}
+      <div className="fixed left-0 top-0 bottom-0 w-96 bg-white shadow-2xl z-50 flex flex-col">
+        {/* Header */}
+        <div className="bg-white border-b border-gray-200 p-4 flex-shrink-0">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-2xl font-bold">Library</h2>
+            <div className="flex items-center gap-2">
               <SyncManager />
               <button
                 onClick={() => setShowAddModal(true)}
-                className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                className="px-3 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm"
               >
                 + PDF
+              </button>
+              <button
+                onClick={onClose}
+                className="text-gray-500 hover:text-gray-700 p-2"
+              >
+                ✕
               </button>
             </div>
           </div>
 
-          {/* 検索とソート */}
-          <div className="flex gap-4">
+          {/* Search and Sort */}
+          <div className="space-y-2">
             <input
               type="text"
               placeholder="タイトル、著者、ファイル名で検索..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="flex-1 px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
-              className="px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="recent">最近読んだ順</option>
               <option value="title">タイトル順</option>
@@ -120,53 +132,56 @@ export default function LibraryPage() {
             </select>
           </div>
         </div>
-      </header>
 
-      {/* 論文一覧 */}
-      <main className="flex-1 overflow-y-auto p-4">
-        <div className="max-w-7xl mx-auto">
+        {/* Paper List */}
+        <div className="flex-1 overflow-y-auto p-4">
           {isLoading ? (
             <div className="text-center py-12">
-              <div className="text-gray-500 text-lg">読み込み中...</div>
+              <div className="text-gray-500">読み込み中...</div>
             </div>
           ) : filteredPapers.length === 0 ? (
             <div className="text-center py-12">
-              <p className="text-gray-500 text-lg">
+              <p className="text-gray-500">
                 {searchQuery ? '検索結果がありません' : '論文がまだ追加されていません'}
               </p>
               {!searchQuery && (
                 <button
                   onClick={() => setShowAddModal(true)}
-                  className="mt-4 px-6 py-3 bg-blue-600 text-white rounded hover:bg-blue-700"
+                  className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm"
                 >
                   最初のPDFを追加
                 </button>
               )}
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="space-y-3">
               {filteredPapers.map((paper) => (
-                <Link
+                <div
                   key={paper.id}
-                  href={`/reader?id=${paper.id}`}
-                  className="bg-white rounded-lg shadow hover:shadow-lg transition-shadow p-4 border border-gray-200"
+                  onClick={() => {
+                    onPaperSelect(paper);
+                    onClose();
+                  }}
+                  className={`bg-white rounded-lg shadow hover:shadow-lg transition-shadow p-3 border cursor-pointer ${
+                    selectedPaperId === paper.id ? 'border-blue-500 bg-blue-50' : 'border-gray-200'
+                  }`}
                 >
                   <div className="flex items-start justify-between mb-2">
-                    <h3 className="text-lg font-semibold line-clamp-2 flex-1">
+                    <h3 className="text-sm font-semibold line-clamp-2 flex-1">
                       {paper.title}
                     </h3>
                     {getStatusBadge(paper.status)}
                   </div>
 
                   {paper.authors && (
-                    <p className="text-sm text-gray-600 mb-1">{paper.authors}</p>
+                    <p className="text-xs text-gray-600 mb-1">{paper.authors}</p>
                   )}
 
                   {paper.year && (
-                    <p className="text-sm text-gray-500 mb-3">{paper.year}</p>
+                    <p className="text-xs text-gray-500 mb-2">{paper.year}</p>
                   )}
 
-                  {/* 進捗バー */}
+                  {/* Progress Bar */}
                   <div className="mb-2">
                     <div className="flex items-center justify-between text-xs text-gray-600 mb-1">
                       <span>
@@ -174,25 +189,25 @@ export default function LibraryPage() {
                       </span>
                       <span>{getProgress(paper)}%</span>
                     </div>
-                    <div className="w-full bg-gray-200 rounded-full h-2">
+                    <div className="w-full bg-gray-200 rounded-full h-1.5">
                       <div
-                        className="bg-blue-600 h-2 rounded-full transition-all"
+                        className="bg-blue-600 h-1.5 rounded-full transition-all"
                         style={{ width: `${getProgress(paper)}%` }}
                       />
                     </div>
                   </div>
 
-                  <div className="text-xs text-gray-500 mt-2">
+                  <div className="text-xs text-gray-500">
                     最終閲覧: {new Date(paper.last_opened_at).toLocaleDateString('ja-JP')}
                   </div>
-                </Link>
+                </div>
               ))}
             </div>
           )}
         </div>
-      </main>
+      </div>
 
-      {/* PDF追加モーダル */}
+      {/* Add Paper Modal */}
       <AddPaperModal
         isOpen={showAddModal}
         onClose={() => setShowAddModal(false)}
@@ -200,6 +215,6 @@ export default function LibraryPage() {
           loadPapers();
         }}
       />
-    </div>
+    </>
   );
 }
