@@ -83,16 +83,17 @@ export default function LibrarySidebar({ isOpen, onClose, onOpen, onPaperSelect,
   return (
     <>
       {/* Overlay - 開いている時のみ表示 */}
-      {isOpen && (
-        <div
-          className="fixed inset-0 bg-black bg-opacity-50 z-40"
-          onClick={onClose}
-        />
-      )}
+      <div
+        className={`fixed inset-0 bg-black transition-opacity duration-300 z-40 ${
+          isOpen ? 'bg-opacity-50 pointer-events-auto' : 'bg-opacity-0 pointer-events-none'
+        }`}
+        onClick={onClose}
+      />
 
       {/* Collapsed Icon Bar - 閉じている時 */}
-      {!isOpen && (
-        <div className="fixed left-0 top-0 bottom-0 w-16 bg-white border-r border-gray-200 shadow-md z-50 flex flex-col items-center py-4 gap-3">
+      <div className={`fixed left-0 top-0 bottom-0 w-16 bg-white border-r border-gray-200 shadow-md z-50 flex flex-col items-center py-4 gap-3 transition-opacity duration-300 ${
+        isOpen ? 'opacity-0 pointer-events-none' : 'opacity-100'
+      }`}>
           {/* Toggle Button - Open */}
           <button
             onClick={onOpen}
@@ -149,10 +150,9 @@ export default function LibrarySidebar({ isOpen, onClose, onOpen, onPaperSelect,
             <SyncManager />
           </div>
         </div>
-      )}
 
       {/* Full Sidebar - 開いている時 */}
-      <div className={`fixed left-0 top-0 bottom-0 w-96 bg-white shadow-2xl z-50 flex flex-col transition-transform duration-300 ${
+      <div className={`fixed left-0 top-0 bottom-0 w-96 bg-white shadow-2xl z-50 flex flex-col transition-all duration-300 ${
         isOpen ? 'translate-x-0' : '-translate-x-full'
       }`}>
         {/* Header */}
