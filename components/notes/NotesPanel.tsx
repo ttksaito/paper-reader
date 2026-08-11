@@ -116,30 +116,31 @@ export default function NotesPanel({
 
   return (
     <div className="flex flex-col h-full bg-white relative">
-      {/* Toggle Button - パネル左端 */}
-      {onToggle && (
-        <button
-          onClick={onToggle}
-          className="absolute -left-12 top-1/2 -translate-y-1/2 bg-gray-600 text-white p-3 rounded-l-lg shadow-lg hover:bg-gray-700 transition-colors z-[60]"
-          title="Notesを閉じる"
-        >
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M9 18L15 12L9 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-          </svg>
-        </button>
-      )}
-
       {/* ヘッダー */}
       <div className="border-b border-gray-200 p-3">
         <div className="flex items-center justify-between mb-2">
           <h2 className="text-lg font-semibold">Notes</h2>
-          {isSaving ? (
-            <span className="text-xs text-gray-500">保存中...</span>
-          ) : lastSaved ? (
-            <span className="text-xs text-gray-500">
-              保存済み {lastSaved.toLocaleTimeString()}
-            </span>
-          ) : null}
+          <div className="flex items-center gap-2">
+            {isSaving ? (
+              <span className="text-xs text-gray-500">保存中...</span>
+            ) : lastSaved ? (
+              <span className="text-xs text-gray-500">
+                保存済み {lastSaved.toLocaleTimeString()}
+              </span>
+            ) : null}
+            {/* Toggle Button */}
+            {onToggle && (
+              <button
+                onClick={onToggle}
+                className="p-2 hover:bg-gray-100 rounded transition-colors"
+                title="Notesを閉じる"
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M3 12H21M3 6H21M3 18H21" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </button>
+            )}
+          </div>
         </div>
 
         {/* 編集/プレビュー切り替えタブ */}

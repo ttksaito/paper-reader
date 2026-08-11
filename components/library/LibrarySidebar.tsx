@@ -93,19 +93,6 @@ export default function LibrarySidebar({ isOpen, onClose, onPaperSelect, selecte
       <div className={`fixed left-0 top-0 bottom-0 w-96 bg-white shadow-2xl z-50 flex flex-col transition-transform duration-300 ${
         isOpen ? 'translate-x-0' : '-translate-x-full'
       }`}>
-        {/* Toggle Button - サイドバー右端 */}
-        {isOpen && (
-          <button
-            onClick={onClose}
-            className="absolute -right-12 top-1/2 -translate-y-1/2 bg-blue-600 text-white p-3 rounded-r-lg shadow-lg hover:bg-blue-700 transition-colors z-[60]"
-            title="Libraryを閉じる"
-          >
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M15 18L9 12L15 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-          </button>
-        )}
-
         {/* Header */}
         <div className="bg-white border-b border-gray-200 p-4 flex-shrink-0">
           <div className="flex items-center justify-between mb-4">
@@ -117,6 +104,16 @@ export default function LibrarySidebar({ isOpen, onClose, onPaperSelect, selecte
                 className="px-3 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm"
               >
                 + PDF
+              </button>
+              {/* Toggle Button */}
+              <button
+                onClick={onClose}
+                className="p-2 hover:bg-gray-100 rounded transition-colors"
+                title="Libraryを閉じる"
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M3 12H21M3 6H21M3 18H21" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
               </button>
             </div>
           </div>
