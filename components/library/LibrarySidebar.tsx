@@ -15,11 +15,12 @@ const AddPaperModal = dynamicImport(
 interface LibrarySidebarProps {
   isOpen: boolean;
   onClose: () => void;
+  onOpen: () => void;
   onPaperSelect: (paper: Paper) => void;
   selectedPaperId?: string;
 }
 
-export default function LibrarySidebar({ isOpen, onClose, onPaperSelect, selectedPaperId }: LibrarySidebarProps) {
+export default function LibrarySidebar({ isOpen, onClose, onOpen, onPaperSelect, selectedPaperId }: LibrarySidebarProps) {
   const [papers, setPapers] = useState<Paper[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [showAddModal, setShowAddModal] = useState<boolean>(false);
@@ -89,7 +90,68 @@ export default function LibrarySidebar({ isOpen, onClose, onPaperSelect, selecte
         />
       )}
 
-      {/* Sidebar */}
+      {/* Collapsed Icon Bar - 閉じている時 */}
+      {!isOpen && (
+        <div className="fixed left-0 top-0 bottom-0 w-16 bg-white border-r border-gray-200 shadow-md z-50 flex flex-col items-center py-4 gap-3">
+          {/* Toggle Button - Open */}
+          <button
+            onClick={onOpen}
+            className="p-3 hover:bg-gray-100 rounded-lg transition-colors"
+            title="Libraryを開く"
+          >
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="3" y="3" width="7" height="7" stroke="currentColor" strokeWidth="2" fill="none"/>
+              <rect x="14" y="3" width="7" height="7" stroke="currentColor" strokeWidth="2" fill="none"/>
+              <rect x="3" y="14" width="7" height="7" stroke="currentColor" strokeWidth="2" fill="none"/>
+              <rect x="14" y="14" width="7" height="7" stroke="currentColor" strokeWidth="2" fill="none"/>
+            </svg>
+          </button>
+
+          {/* Divider */}
+          <div className="w-8 h-px bg-gray-300" />
+
+          {/* Add PDF Button */}
+          <button
+            onClick={() => setShowAddModal(true)}
+            className="p-3 hover:bg-blue-50 rounded-lg transition-colors text-blue-600"
+            title="PDFを追加"
+          >
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 5V19M5 12H19" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+            </svg>
+          </button>
+
+          {/* Paper Icons - 最大5件表示 */}
+          <div className="flex-1 overflow-y-auto flex flex-col gap-2 w-full px-2">
+            {filteredPapers.slice(0, 5).map((paper) => (
+              <button
+                key={paper.id}
+                onClick={() => {
+                  onPaperSelect(paper);
+                }}
+                className={`p-2 rounded transition-colors ${
+                  selectedPaperId === paper.id
+                    ? 'bg-blue-100 text-blue-600'
+                    : 'hover:bg-gray-100'
+                }`}
+                title={paper.title}
+              >
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M14 2H6C5.46957 2 4.96086 2.21071 4.58579 2.58579C4.21071 2.96086 4 3.46957 4 4V20C4 20.5304 4.21071 21.0391 4.58579 21.4142C4.96086 21.7893 5.46957 22 6 22H18C18.5304 22 19.0391 21.7893 19.4142 21.4142C19.7893 21.0391 20 20.5304 20 20V8L14 2Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  <path d="M14 2V8H20" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </button>
+            ))}
+          </div>
+
+          {/* Sync Status Indicator */}
+          <div className="mt-auto">
+            <SyncManager />
+          </div>
+        </div>
+      )}
+
+      {/* Full Sidebar - 開いている時 */}
       <div className={`fixed left-0 top-0 bottom-0 w-96 bg-white shadow-2xl z-50 flex flex-col transition-transform duration-300 ${
         isOpen ? 'translate-x-0' : '-translate-x-full'
       }`}>

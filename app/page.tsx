@@ -31,10 +31,8 @@ export default function Home() {
 
     if (paperId) {
       loadPaper(paperId);
-    } else {
-      // IDがない場合はLibraryを表示
-      setShowLibrary(true);
     }
+    // アイコンバーは常に表示されるので、自動でLibraryを開く必要なし
   }, []);
 
   const loadPaper = async (paperId: string) => {
@@ -116,6 +114,7 @@ export default function Home() {
       <LibrarySidebar
         isOpen={showLibrary}
         onClose={() => setShowLibrary(false)}
+        onOpen={() => setShowLibrary(true)}
         onPaperSelect={handlePaperSelect}
         selectedPaperId={selectedPaper?.id}
       />
@@ -166,21 +165,8 @@ export default function Home() {
         </div>
       )}
 
-      {/* メインコンテンツ（分割レイアウト） */}
-      <div className="flex-1 overflow-hidden relative">
-        {/* 左端：Library開閉ボタン */}
-        {!focusMode && !showLibrary && selectedPaper && (
-          <button
-            onClick={() => setShowLibrary(true)}
-            className="fixed left-0 top-1/2 -translate-y-1/2 z-[60] bg-blue-600 text-white p-3 rounded-r-lg shadow-lg hover:bg-blue-700 transition-colors"
-            title="Libraryを開く"
-          >
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M9 18L15 12L9 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-          </button>
-        )}
-
+      {/* メインコンテンツ（分割レイアウト） - Libraryアイコンバー分の左マージン */}
+      <div className="flex-1 overflow-hidden relative" style={{ marginLeft: showLibrary ? '384px' : '64px' }}>
         {/* 右端：Notes開くボタン（Notesが閉じている時のみ） */}
         {!focusMode && selectedPaper && !showNotes && (
           <button
