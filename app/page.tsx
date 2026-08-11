@@ -125,12 +125,6 @@ export default function Home() {
         <header className="bg-white border-b border-gray-200 p-4 flex-shrink-0">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <button
-                onClick={() => setShowLibrary(true)}
-                className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-              >
-                📚 Library
-              </button>
               <h1 className="text-xl font-bold">
                 {selectedPaper ? selectedPaper.title : 'Paper Reader'}
               </h1>
@@ -143,12 +137,6 @@ export default function Home() {
                 title="集中モード（Escで解除）"
               >
                 集中モード
-              </button>
-              <button
-                onClick={toggleNotes}
-                className="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700"
-              >
-                {showNotes ? 'Notes非表示' : 'Notes表示'}
               </button>
             </div>
           </div>
@@ -179,7 +167,37 @@ export default function Home() {
       )}
 
       {/* メインコンテンツ（分割レイアウト） */}
-      <div className="flex-1 overflow-hidden">
+      <div className="flex-1 overflow-hidden relative">
+        {/* 左端：Library開閉ボタン */}
+        {!focusMode && !showLibrary && (
+          <button
+            onClick={() => setShowLibrary(true)}
+            className="fixed left-0 top-1/2 -translate-y-1/2 z-30 bg-blue-600 text-white p-3 rounded-r-lg shadow-lg hover:bg-blue-700 transition-colors"
+            title="Libraryを開く"
+          >
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M9 18L15 12L9 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          </button>
+        )}
+
+        {/* 右端：Notes開閉ボタン */}
+        {!focusMode && selectedPaper && (
+          <button
+            onClick={toggleNotes}
+            className="fixed right-0 top-1/2 -translate-y-1/2 z-30 bg-gray-600 text-white p-3 rounded-l-lg shadow-lg hover:bg-gray-700 transition-colors"
+            title={showNotes ? 'Notesを閉じる' : 'Notesを開く'}
+          >
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              {showNotes ? (
+                <path d="M9 18L15 12L9 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              ) : (
+                <path d="M15 18L9 12L15 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              )}
+            </svg>
+          </button>
+        )}
+
         {selectedPaper ? (
           <ResizableSplitPane
             left={
