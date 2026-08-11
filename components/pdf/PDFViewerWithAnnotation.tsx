@@ -32,6 +32,8 @@ const PDFViewerWithAnnotation = forwardRef<PDFViewerWithAnnotationRef, PDFViewer
   onTextSelect,
   onAddToNote,
 }, ref) => {
+  console.log('PDFViewerWithAnnotation mounted with pdfUrl:', pdfUrl);
+
   const [numPages, setNumPages] = useState<number>(0);
   const [pageNumber, setPageNumber] = useState<number>(initialPage);
   const [scale, setScale] = useState<number>(1.0);
@@ -57,8 +59,19 @@ const PDFViewerWithAnnotation = forwardRef<PDFViewerWithAnnotationRef, PDFViewer
   const [isTranslating, setIsTranslating] = useState<boolean>(false);
 
   function onDocumentLoadSuccess({ numPages }: { numPages: number }) {
+    console.log('PDF loaded successfully, pages:', numPages);
     setNumPages(numPages);
   }
+
+  function onDocumentLoadError(error: Error) {
+    console.error('PDF load error:', error);
+  }
+
+  // pdfUrlが変更された時のログ
+  useEffect(() => {
+    console.log('pdfUrl changed to:', pdfUrl);
+    console.log('paperId:', paperId);
+  }, [pdfUrl, paperId]);
 
   // ページのサイズを取得
   useEffect(() => {
@@ -293,9 +306,15 @@ const PDFViewerWithAnnotation = forwardRef<PDFViewerWithAnnotationRef, PDFViewer
             <Document
               file={pdfUrl}
               onLoadSuccess={onDocumentLoadSuccess}
+              onLoadError={onDocumentLoadError}
               loading={
                 <div className="flex items-center justify-center h-screen">
                   <div className="text-gray-500">Loading PDF...</div>
+                </div>
+              }
+              error={
+                <div className="flex items-center justify-center h-screen">
+                  <div className="text-red-500">PDF読み込みエラー</div>
                 </div>
               }
             >

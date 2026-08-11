@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import dynamicImport from 'next/dynamic';
+import dynamic from 'next/dynamic';
 import ResizableSplitPane from '@/components/layout/ResizableSplitPane';
 import NotesPanel from '@/components/notes/NotesPanel';
 import LibrarySidebar from '@/components/library/LibrarySidebar';
@@ -9,8 +9,8 @@ import { PDFViewerWithAnnotationRef } from '@/components/pdf/PDFViewerWithAnnota
 import { Paper } from '@/types';
 import { updateReadingProgress, getPaperById } from '@/lib/database';
 
-// クライアントサイドでのみロード
-const PDFViewerWithAnnotation = dynamicImport(
+// PDFViewerはクライアントサイドでのみロード（react-pdfはSSRと互換性がないため）
+const PDFViewerWithAnnotation = dynamic(
   () => import('@/components/pdf/PDFViewerWithAnnotation'),
   { ssr: false }
 );
@@ -102,11 +102,38 @@ export default function Home() {
   };
 
   const handlePaperSelect = (paper: Paper) => {
+    console.log('Paper selected:', paper);
+    console.log('PDF URL:', paper.file_path);
     setSelectedPaper(paper);
     setCurrentPage(paper.current_page || 1);
     // URLを更新
     window.history.pushState({}, '', `/?id=${paper.id}`);
   };
+
+  // PDFViewerとNotesPanelを変数として定義
+  const pdfViewer = selectedPaper ? (
+    <PDFViewerWithAnnotation
+      key={selectedPaper.id}
+      ref={pdfViewerRef}
+      pdfUrl={selectedPaper.file_path}
+      paperId={selectedPaper.id}
+      onPageChange={setCurrentPage}
+      initialPage={currentPage}
+      onTextSelect={handleTextSelect}
+      onAddToNote={handleAddToNote}
+    />
+  ) : null;
+
+  const notesPanel = selectedPaper ? (
+    <NotesPanel
+      key={selectedPaper.id}
+      paperId={selectedPaper.id}
+      initialContent={notesContent}
+      onSave={handleNotesSave}
+      onPageJump={handlePageJump}
+      onToggle={toggleNotes}
+    />
+  ) : null;
 
   return (
     <div className="flex flex-col h-screen">
@@ -166,7 +193,7 @@ export default function Home() {
       )}
 
       {/* メインコンテンツ（分割レイアウト） - Libraryアイコンバー分の左マージン */}
-      <div className="flex-1 overflow-hidden relative" style={{ marginLeft: showLibrary ? '384px' : '64px' }}>
+      <div className="flex-1 overflow-hidden relative bg-gray-50" style={{ marginLeft: showLibrary ? '384px' : '64px' }}>
         {/* 右端：Notes開くボタン（Notesが閉じている時のみ） */}
         {!focusMode && selectedPaper && !showNotes && (
           <button
@@ -182,26 +209,8 @@ export default function Home() {
 
         {selectedPaper ? (
           <ResizableSplitPane
-            left={
-              <PDFViewerWithAnnotation
-                ref={pdfViewerRef}
-                pdfUrl={selectedPaper.file_path}
-                paperId={selectedPaper.id}
-                onPageChange={setCurrentPage}
-                initialPage={currentPage}
-                onTextSelect={handleTextSelect}
-                onAddToNote={handleAddToNote}
-              />
-            }
-            right={
-              <NotesPanel
-                paperId={selectedPaper.id}
-                initialContent={notesContent}
-                onSave={handleNotesSave}
-                onPageJump={handlePageJump}
-                onToggle={toggleNotes}
-              />
-            }
+            left={pdfViewer}
+            right={notesPanel}
             defaultLeftWidth={65}
             minLeftWidth={30}
             maxLeftWidth={90}
@@ -217,7 +226,10 @@ export default function Home() {
                 iPad向け英語論文PDFリーダー
               </p>
               <button
-                onClick={() => setShowLibrary(true)}
+                onClick={() => {
+                  console.log('Center Library button clicked');
+                  setShowLibrary(true);
+                }}
                 className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
               >
                 📚 Libraryを開く
