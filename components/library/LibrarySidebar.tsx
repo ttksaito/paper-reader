@@ -97,7 +97,7 @@ export default function LibrarySidebar({ isOpen, onClose, onPaperSelect, selecte
         {isOpen && (
           <button
             onClick={onClose}
-            className="absolute -right-12 top-1/2 -translate-y-1/2 bg-blue-600 text-white p-3 rounded-r-lg shadow-lg hover:bg-blue-700 transition-colors"
+            className="absolute -right-12 top-1/2 -translate-y-1/2 bg-blue-600 text-white p-3 rounded-r-lg shadow-lg hover:bg-blue-700 transition-colors z-[60]"
             title="Libraryを閉じる"
           >
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">

@@ -120,7 +120,7 @@ export default function NotesPanel({
       {onToggle && (
         <button
           onClick={onToggle}
-          className="absolute -left-12 top-1/2 -translate-y-1/2 bg-gray-600 text-white p-3 rounded-l-lg shadow-lg hover:bg-gray-700 transition-colors z-10"
+          className="absolute -left-12 top-1/2 -translate-y-1/2 bg-gray-600 text-white p-3 rounded-l-lg shadow-lg hover:bg-gray-700 transition-colors z-[60]"
           title="Notesを閉じる"
         >
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">

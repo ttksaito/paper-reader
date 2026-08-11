@@ -169,10 +169,10 @@ export default function Home() {
       {/* メインコンテンツ（分割レイアウト） */}
       <div className="flex-1 overflow-hidden relative">
         {/* 左端：Library開閉ボタン */}
-        {!focusMode && !showLibrary && (
+        {!focusMode && !showLibrary && selectedPaper && (
           <button
             onClick={() => setShowLibrary(true)}
-            className="fixed left-0 top-1/2 -translate-y-1/2 z-30 bg-blue-600 text-white p-3 rounded-r-lg shadow-lg hover:bg-blue-700 transition-colors"
+            className="fixed left-0 top-1/2 -translate-y-1/2 z-[60] bg-blue-600 text-white p-3 rounded-r-lg shadow-lg hover:bg-blue-700 transition-colors"
             title="Libraryを開く"
           >
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -185,7 +185,7 @@ export default function Home() {
         {!focusMode && selectedPaper && !showNotes && (
           <button
             onClick={toggleNotes}
-            className="fixed right-0 top-1/2 -translate-y-1/2 z-30 bg-gray-600 text-white p-3 rounded-l-lg shadow-lg hover:bg-gray-700 transition-colors"
+            className="fixed right-0 top-1/2 -translate-y-1/2 z-[60] bg-gray-600 text-white p-3 rounded-l-lg shadow-lg hover:bg-gray-700 transition-colors"
             title="Notesを開く"
           >
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
